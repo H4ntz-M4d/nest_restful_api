@@ -80,7 +80,10 @@
       "^generated/prisma$": "<rootDir>/../generated/prisma/index.js",
       "^generated/(.*)$": "<rootDir>/../generated/$1",
       "^src/(.*)$": "<rootDir>/../src/$1"
-    }
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/(?!uuid)/"
+    ]
 
   }
 }
