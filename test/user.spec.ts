@@ -74,4 +74,41 @@ describe('UserController', () => {
     })
 
   })
+
+  describe('POST /api/users/login', () => {
+
+    beforeEach(async () => {
+      await testService.deleteUsers();
+      await testService.createUser();
+    })
+
+    it('should be rejected if request is invalid', async () => {
+      const res = await request(app.getHttpServer()).post('/api/users/login').send({
+        username: '',
+        password: '',
+        name: '',
+      })
+
+      logger.info(res.body)
+      expect(res.status).toBe(400)
+      expect(res.body.errors).toBeDefined()
+
+    })
+
+    it('should be able to login', async () => {
+      const res = await request(app.getHttpServer()).post('/api/users/login').send({
+        username: 'test',
+        password: 'test',
+        name: 'test',
+      })
+
+      logger.info(res.body)
+      expect(res.status).toBe(200)
+      expect(res.body.data.username).toBe('test')
+      expect(res.body.data.name).toBe('test')
+      expect(res.body.data.token).toBeDefined()
+
+    })
+
+  })
 });
