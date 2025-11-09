@@ -111,4 +111,32 @@ describe('UserController', () => {
     })
 
   })
+
+  describe('GET /api/users/current', () => {
+
+    beforeEach(async () => {
+      await testService.deleteUsers();
+      await testService.createUser();
+    })
+
+    it('should be rejected if header auth is invalid', async () => {
+      const res = await request(app.getHttpServer()).get('/api/users/current').set('Authorization', 'wrong')
+
+      logger.info(res.body)
+      expect(res.status).toBe(401)
+      expect(res.body.errors).toBeDefined()
+
+    })
+
+    it('should be able to get user', async () => {
+      const res = await request(app.getHttpServer()).get('/api/users/current').set('Authorization', 'test')
+
+      logger.info(res.body)
+      expect(res.status).toBe(200)
+      expect(res.body.data.username).toBe('test')
+      expect(res.body.data.name).toBe('test')
+
+    })
+
+  })
 });
