@@ -28,9 +28,9 @@ model Users {
 model Contacts {
   id         BigInt  @id @default(autoincrement())
   first_name String  @db.VarChar(100)
-  last_name  String  @db.VarChar(100)
-  email      String  @unique @db.VarChar(100)
-  phone      String  @db.VarChar(20)
+  last_name  String?  @db.VarChar(100)
+  email      String?  @unique @db.VarChar(100)
+  phone      String?  @db.VarChar(20)
   id_user    BigInt?
 
   users     Users?    @relation(fields: [id_user], references: [id])
