@@ -15,6 +15,14 @@ export class TestService{
         })
     }
 
+    async deleteContact() {
+        await this.prisma.contacts.deleteMany({
+            where: {
+                id_user: 160
+            }
+        })
+    }
+
     async createUser() {
         await this.prisma.users.create({
             data: {
