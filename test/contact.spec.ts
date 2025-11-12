@@ -171,7 +171,7 @@ describe('ContactController', () => {
 
     })
 
-    // ====================================================== GET CONTACT =============================================================
+    // ====================================================== DELETE CONTACT =============================================================
 
     describe('DELETE /api/contact/:id', () => {
 
@@ -206,5 +206,131 @@ describe('ContactController', () => {
 
         })
 
+    })
+
+    // ====================================================== SEARCH CONTACT =============================================================
+
+    describe('SEARCH /api/contact/:id', () => {
+
+        beforeEach(async () => {
+            await testService.deleteContact();
+            await testService.deleteUsers();
+
+            await testService.createUser();
+            await testService.createContact();
+        })
+
+        it('should be able to search contact', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`/api/contact`)
+                .set('Authorization', 'test')
+
+            logger.info(res.body)
+            expect(res.status).toBe(200)
+            expect(res.body.data.length).toBe(1)
+
+        })
+
+        it('should be able to search contact by name', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`/api/contact`)
+                .query({
+                    name: 'tes'
+                })
+                .set('Authorization', 'test')
+
+            logger.info(res.body)
+            expect(res.status).toBe(200)
+            expect(res.body.data.length).toBe(1)
+
+        })
+
+        it('should be able to search contact by name not found', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`/api/contact`)
+                .query({
+                    name: 'wrong'
+                })
+                .set('Authorization', 'test')
+
+            logger.info(res.body)
+            expect(res.status).toBe(200)
+            expect(res.body.data.length).toBe(0)
+
+        })
+
+        it('should be able to search contact by email', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`/api/contact`)
+                .query({
+                    email: 'tes'
+                })
+                .set('Authorization', 'test')
+
+            logger.info(res.body)
+            expect(res.status).toBe(200)
+            expect(res.body.data.length).toBe(1)
+
+        })
+
+        it('should be able to search contact by email not found', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`/api/contact`)
+                .query({
+                    email: 'wrong'
+                })
+                .set('Authorization', 'test')
+
+            logger.info(res.body)
+            expect(res.status).toBe(200)
+            expect(res.body.data.length).toBe(0)
+
+        })
+
+        it('should be able to search contact by phone', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`/api/contact`)
+                .query({
+                    phone: '901'
+                })
+                .set('Authorization', 'test')
+
+            logger.info(res.body)
+            expect(res.status).toBe(200)
+            expect(res.body.data.length).toBe(1)
+
+        })
+
+        it('should be able to search contact by phone not found', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`/api/contact`)
+                .query({
+                    phone: '888'
+                })
+                .set('Authorization', 'test')
+
+            logger.info(res.body)
+            expect(res.status).toBe(200)
+            expect(res.body.data.length).toBe(0)
+
+        })
+
+        it('should be able to search contact wwith page', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`/api/contact`)
+                .query({
+                    size: 1,
+                    page: 2,
+                })
+                .set('Authorization', 'test')
+
+            logger.info(res.body)
+            expect(res.status).toBe(200)
+            expect(res.body.data.length).toBe(0)
+            expect(res.body.paginate.currentPage).toBe(2)
+            expect(res.body.paginate.size).toBe(1)
+            expect(res.body.paginate.totalPage).toBe(1)
+
+        })
     })
 });

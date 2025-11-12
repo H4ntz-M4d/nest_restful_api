@@ -168,15 +168,15 @@ describe('UserController', () => {
 
     })
 
-    it('should be able to update username', async () => {
+    it('should be able to update name', async () => {
       const res = await request(app.getHttpServer()).patch('/api/users/current').send({
-        username: 'test updated'
+        name: 'test updated'
       }).set('Authorization', 'test')
 
       logger.info(res.body)
       expect(res.status).toBe(200)
-      expect(res.body.data.username).toBe('test updated')
-      expect(res.body.data.name).toBe('test')
+      expect(res.body.data.username).toBe('test')
+      expect(res.body.data.name).toBe('test updated')
 
     })
 
@@ -189,13 +189,13 @@ describe('UserController', () => {
       expect(res.status).toBe(200)
 
       res = await request(app.getHttpServer()).post('/api/users/login').send({
-        username: "test updated",
+        username: "test",
         password: 'test updated',
       })
 
       logger.info(res.body)
       expect(res.status).toBe(200)
-      expect(res.body.data.username).toBe('test updated')
+      expect(res.body.data.username).toBe('test')
       expect(res.body.data.name).toBe('test')
       expect(res.body.data.token).toBeDefined()
 

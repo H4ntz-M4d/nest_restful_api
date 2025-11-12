@@ -3,9 +3,10 @@ import { Contacts, Users } from 'generated/prisma';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { PrismaService } from 'src/common/prisma.service';
 import { ValidationService } from 'src/common/validation.service';
-import { ContactResponse, CreateContact, UpdateContact } from 'src/model/contact.model';
+import { ContactResponse, CreateContact, SearchContact, UpdateContact } from 'src/model/contact.model';
 import { Logger } from "winston";
 import { ContactValidation } from './contact.validation';
+import { WebResponse } from 'src/model/web.model';
 
 @Injectable()
 export class ContactService {
@@ -92,5 +93,74 @@ export class ContactService {
         })
 
         return this.toContactResponse(contact)
+    }
+
+    async search(user: Users, req: SearchContact): Promise<WebResponse<ContactResponse[]>> {
+        const searchReq: SearchContact = this.validationService.validate(ContactValidation.SEARCH, req) as SearchContact
+        const filters: any[] = []
+
+        if (searchReq.name) {
+            filters.push({
+                OR: [
+                    {
+                        first_name: {
+                            contains: searchReq.name
+                        }
+                    },
+                    {
+                        last_name: {
+                            contains: searchReq.name
+                        }
+                    },
+                ]
+            })
+        }
+
+        if (searchReq.email) {
+            filters.push({
+                email: {
+                    contains: searchReq.email
+                }
+            })
+        }
+
+        if (searchReq.phone) {
+            filters.push({
+                phone: {
+                    contains: searchReq.phone
+                }
+            })
+        }
+
+        const skip = (searchReq.page - 1) * searchReq.size
+
+        const contact = await this.prisma.contacts.findMany({
+            where: {
+                users: {
+                    username: user.username,
+                },
+                AND: filters
+            },
+            take: searchReq.size,
+            skip: skip
+        })
+
+        const total = await this.prisma.contacts.count({
+            where: {
+                users: {
+                    username: user.username,
+                },
+                AND: filters
+            }
+        })
+
+        return {
+            data: contact.map(contact => this.toContactResponse(contact)),
+            paginate: {
+                currentPage: searchReq.page,
+                size: searchReq.size,
+                totalPage: Math.ceil(total / searchReq.size)
+            }
+        }
     }
 }
