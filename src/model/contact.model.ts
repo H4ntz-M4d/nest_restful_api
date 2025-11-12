@@ -6,7 +6,7 @@ export class ContactResponse {
     phone?: string | null
 }
 
-export class CreateContact{
+export class CreateContact {
     first_name: string
     last_name?: string
     email?: string
@@ -19,4 +19,12 @@ export class UpdateContact {
     last_name?: string
     email?: string
     phone?: string
+}
+
+export class SearchContact {
+    name?: string
+    email?: string
+    phone?: string
+    page: number
+    size: number
 }
